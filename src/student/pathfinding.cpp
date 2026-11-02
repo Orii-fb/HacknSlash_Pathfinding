@@ -32,6 +32,11 @@ SearchResult Dijkstra(const Graph& graph, int start, int goal) {
         if (u == goal) {
             result.status = Status::Found;
             result.cost = g[goal];
+
+            for (int i = goal; i != -1; i = previousPos[i]) {
+                result.nodes.push_back(i);
+            }
+
         }
     }
     // start 
