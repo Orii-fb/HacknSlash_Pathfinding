@@ -85,38 +85,33 @@ bool NavMesh::Build() {
 int NavMesh::Locate(Vec2 point) const {
     if (!Finite(point)) return -1;
 
-    constexpr double epsilon = 1e-10;
     for (std::size_t polygonIndex = 0; polygonIndex < polygons_.size(); ++polygonIndex) {
-        const auto& vertices = polygons_[polygonIndex].vertices;
-        if (vertices.size() < 3) continue;
-
-        bool hasPositiveSide = false;
-        bool hasNegativeSide = false;
-        bool inside = true;
-        for (std::size_t i = 0; i < vertices.size(); ++i) {
-            const Vec2 edge = vertices[(i + 1) % vertices.size()] - vertices[i];
-            const double side = Cross(edge, point - vertices[i]);
-            if (!std::isfinite(side)) {
-                inside = false;
-                break;
-            }
-            if (side > epsilon) hasPositiveSide = true;
-            if (side < -epsilon) hasNegativeSide = true;
-            if (hasPositiveSide && hasNegativeSide) {
-                inside = false;
-                break;
-            }
-        }
-        if (inside) return static_cast<int>(polygonIndex);
+        if (Contains(static_cast<int>(polygonIndex), point))
+            return static_cast<int>(polygonIndex);
     }
 
     return -1;
 }
 bool NavMesh::Contains(int polygon, Vec2 point) const {
-    // TODO J3 : test point dans polygone.
-    (void)polygon;
-    (void)point;
-    return false;
+    if (polygon < 0 || polygon >= static_cast<int>(polygons_.size()) || !Finite(point))
+        return false;
+
+    const auto& vertices = polygons_[polygon].vertices;
+    if (vertices.size() < 3) return false;
+
+    constexpr double epsilon = 1e-10;
+    bool hasPositiveSide = false;
+    bool hasNegativeSide = false;
+    for (std::size_t i = 0; i < vertices.size(); ++i) {
+        const Vec2 edge = vertices[(i + 1) % vertices.size()] - vertices[i];
+        const double side = Cross(edge, point - vertices[i]);
+        if (!std::isfinite(side)) return false;
+        if (side > epsilon) hasPositiveSide = true;
+        if (side < -epsilon) hasNegativeSide = true;
+        if (hasPositiveSide && hasNegativeSide) return false;
+    }
+
+    return true;
 }
 bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
     // TODO J3 : vérifier qu'un segment reste dans la surface navigable.
