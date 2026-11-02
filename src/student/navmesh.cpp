@@ -114,10 +114,81 @@ bool NavMesh::Contains(int polygon, Vec2 point) const {
     return true;
 }
 bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
-    // TODO J3 : vérifier qu'un segment reste dans la surface navigable.
-    (void)from;
-    (void)to;
-    return false;
+    if (!Finite(from) || !Finite(to) || polygons_.empty()) return false;
+
+    constexpr double epsilon = 1e-10;
+    constexpr double parameterEpsilon = 1e-10;
+    const Vec2 direction = to - from;
+    if (!Finite(direction)) return false;
+
+    std::vector<std::pair<double, double>> intervals;
+    intervals.reserve(polygons_.size());
+
+    for (const Polygon& polygon : polygons_) {
+        const auto& vertices = polygon.vertices;
+        if (vertices.size() < 3) continue;
+
+        double twiceArea = 0.0;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            twiceArea += Cross(vertices[i], vertices[(i + 1) % vertices.size()]);
+        }
+        if (!std::isfinite(twiceArea) || std::abs(twiceArea) <= epsilon) continue;
+        const double winding = twiceArea > 0.0 ? 1.0 : -1.0;
+
+        double enter = 0.0;
+        double leave = 1.0;
+        bool intersects = true;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            const Vec2 edgeStart = vertices[i];
+            const Vec2 edge = vertices[(i + 1) % vertices.size()] - edgeStart;
+            const double startSide = winding * Cross(edge, from - edgeStart);
+            const double sideChange = winding * Cross(edge, direction);
+            if (!std::isfinite(startSide) || !std::isfinite(sideChange)) {
+                intersects = false;
+                break;
+            }
+
+            if (std::abs(sideChange) <= epsilon) {
+                if (startSide < -epsilon) {
+                    intersects = false;
+                    break;
+                }
+                continue;
+            }
+
+            const double boundary = (-epsilon - startSide) / sideChange;
+            if (sideChange > 0.0)
+                enter = std::max(enter, boundary);
+            else
+                leave = std::min(leave, boundary);
+
+            if (enter > leave + parameterEpsilon) {
+                intersects = false;
+                break;
+            }
+        }
+
+        if (intersects && leave >= -parameterEpsilon &&
+            enter <= 1.0 + parameterEpsilon) {
+            intervals.push_back({
+                std::max(0.0, enter),
+                std::min(1.0, leave)
+            });
+        }
+    }
+
+    double coveredUntil = 0.0;
+    while (coveredUntil < 1.0 - parameterEpsilon) {
+        double furthest = coveredUntil;
+        for (const auto& interval : intervals) {
+            if (interval.first <= coveredUntil + parameterEpsilon)
+                furthest = std::max(furthest, interval.second);
+        }
+        if (furthest <= coveredUntil + parameterEpsilon) return false;
+        coveredUntil = furthest;
+    }
+
+    return true;
 }
 Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
     // TODO J3 : relier localisation, recherche sur graphe et trajet géométrique.
