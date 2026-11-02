@@ -83,8 +83,33 @@ bool NavMesh::Build() {
     return true;
 }
 int NavMesh::Locate(Vec2 point) const {
-    // TODO J3 : localiser le point dans un polygone navigable.
-    (void)point;
+    if (!Finite(point)) return -1;
+
+    constexpr double epsilon = 1e-10;
+    for (std::size_t polygonIndex = 0; polygonIndex < polygons_.size(); ++polygonIndex) {
+        const auto& vertices = polygons_[polygonIndex].vertices;
+        if (vertices.size() < 3) continue;
+
+        bool hasPositiveSide = false;
+        bool hasNegativeSide = false;
+        bool inside = true;
+        for (std::size_t i = 0; i < vertices.size(); ++i) {
+            const Vec2 edge = vertices[(i + 1) % vertices.size()] - vertices[i];
+            const double side = Cross(edge, point - vertices[i]);
+            if (!std::isfinite(side)) {
+                inside = false;
+                break;
+            }
+            if (side > epsilon) hasPositiveSide = true;
+            if (side < -epsilon) hasNegativeSide = true;
+            if (hasPositiveSide && hasNegativeSide) {
+                inside = false;
+                break;
+            }
+        }
+        if (inside) return static_cast<int>(polygonIndex);
+    }
+
     return -1;
 }
 bool NavMesh::Contains(int polygon, Vec2 point) const {
