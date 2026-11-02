@@ -1,0 +1,31 @@
+# Campus Path Engine 1.0 - coordinates in meters on XZ
+title Trois piliers - passages
+bounds -8 -6 8 6
+radius 0.25
+player -6 0
+enemy light -6 -4
+enemy heavy 0 4
+enemy light 6 0
+wall -4.6 -1.2 -3.4 1.2 1.5
+wall -0.6 -1.2 0.6 1.2 1.8
+wall 3.4 -1.2 4.6 1.2 1.5
+# Surfaces sources de visualisation, sans graphe ni adjacences.
+# Ces données ne constituent pas un composant NavMesh implémenté.
+surface 4 -7.7 -5.7 -4.9 -5.7 -4.9 -1.5 -7.7 -1.5
+surface 4 -4.9 -5.7 -3.1 -5.7 -3.1 -1.5 -4.9 -1.5
+surface 4 -3.1 -5.7 -0.9 -5.7 -0.9 -1.5 -3.1 -1.5
+surface 4 -0.9 -5.7 0.9 -5.7 0.9 -1.5 -0.9 -1.5
+surface 4 0.9 -5.7 3.1 -5.7 3.1 -1.5 0.9 -1.5
+surface 4 3.1 -5.7 4.9 -5.7 4.9 -1.5 3.1 -1.5
+surface 4 4.9 -5.7 7.7 -5.7 7.7 -1.5 4.9 -1.5
+surface 4 -7.7 -1.5 -4.9 -1.5 -4.9 1.5 -7.7 1.5
+surface 4 -3.1 -1.5 -0.9 -1.5 -0.9 1.5 -3.1 1.5
+surface 4 0.9 -1.5 3.1 -1.5 3.1 1.5 0.9 1.5
+surface 4 4.9 -1.5 7.7 -1.5 7.7 1.5 4.9 1.5
+surface 4 -7.7 1.5 -4.9 1.5 -4.9 5.7 -7.7 5.7
+surface 4 -4.9 1.5 -3.1 1.5 -3.1 5.7 -4.9 5.7
+surface 4 -3.1 1.5 -0.9 1.5 -0.9 5.7 -3.1 5.7
+surface 4 -0.9 1.5 0.9 1.5 0.9 5.7 -0.9 5.7
+surface 4 0.9 1.5 3.1 1.5 3.1 5.7 0.9 5.7
+surface 4 3.1 1.5 4.9 1.5 4.9 5.7 3.1 5.7
+surface 4 4.9 1.5 7.7 1.5 7.7 5.7 4.9 5.7

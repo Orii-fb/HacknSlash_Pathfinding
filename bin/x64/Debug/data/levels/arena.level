@@ -1,0 +1,19 @@
+# Campus Path Engine 1.0 - coordinates in meters on XZ
+title Arene - contournement
+bounds -8 -6 8 6
+radius 0.25
+player -5 0
+enemy light -5 -4
+enemy heavy -5 4
+enemy light 5 0
+wall -1.5 -2 1.5 2 1.5
+# Surfaces sources de visualisation, sans graphe ni adjacences.
+# Ces données ne constituent pas un composant NavMesh implémenté.
+surface 4 -7.7 -5.7 -1.8 -5.7 -1.8 -2.3 -7.7 -2.3
+surface 4 -1.8 -5.7 1.8 -5.7 1.8 -2.3 -1.8 -2.3
+surface 4 1.8 -5.7 7.7 -5.7 7.7 -2.3 1.8 -2.3
+surface 4 -7.7 -2.3 -1.8 -2.3 -1.8 2.3 -7.7 2.3
+surface 4 1.8 -2.3 7.7 -2.3 7.7 2.3 1.8 2.3
+surface 4 -7.7 2.3 -1.8 2.3 -1.8 5.7 -7.7 5.7
+surface 4 -1.8 2.3 1.8 2.3 1.8 5.7 -1.8 5.7
+surface 4 1.8 2.3 7.7 2.3 7.7 5.7 1.8 5.7

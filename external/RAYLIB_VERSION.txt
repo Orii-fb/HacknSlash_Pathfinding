@@ -1,0 +1,5 @@
+raylib 5.5
+Source: https://github.com/raysan5/raylib/tree/5.5
+Archive: https://codeload.github.com/raysan5/raylib/tar.gz/refs/tags/5.5
+SHA256 archive: aea98ecf5bc5c5e0b789a76de0083a21a70457050ea4cc2aec7566935f5e258e
+Files retained: src/, cmake/, CMakeLists.txt, CMakeOptions.txt, raylib.pc.in, LICENSE, README.md.
