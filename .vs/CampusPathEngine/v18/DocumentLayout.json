@@ -1,0 +1,173 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\pathfinding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\student\\pathfinding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CC073C3-0C01-5802-A80E-32F85AAFE4ED}|vs2026\\campus_path_engine.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6CC073C3-0C01-5802-A80E-32F85AAFE4ED}|vs2026\\campus_path_engine.vcxproj|solutionrelative:src\\engine\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\simulation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\engine\\simulation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\navigation_debug.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\engine\\navigation_debug.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\level.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\engine\\level.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\enemy_ai.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\student\\enemy_ai.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navmesh.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\student\\navmesh.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navigation_agent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\student\\navigation_agent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\gameplay.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{F7ACF739-8350-5FF2-8781-386CCC48E55C}|vs2026\\cpe_core.vcxproj|solutionrelative:src\\student\\gameplay.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 8,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\main.cpp",
+              "RelativeDocumentMoniker": "src\\engine\\main.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\main.cpp",
+              "RelativeToolTip": "src\\engine\\main.cpp",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAADUAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T08:42:30.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "simulation.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\simulation.cpp",
+              "RelativeDocumentMoniker": "src\\engine\\simulation.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\simulation.cpp",
+              "RelativeToolTip": "src\\engine\\simulation.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T08:42:28.444Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "navigation_debug.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\navigation_debug.cpp",
+              "RelativeDocumentMoniker": "src\\engine\\navigation_debug.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\navigation_debug.cpp",
+              "RelativeToolTip": "src\\engine\\navigation_debug.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T08:42:25.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "level.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\level.cpp",
+              "RelativeDocumentMoniker": "src\\engine\\level.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\engine\\level.cpp",
+              "RelativeToolTip": "src\\engine\\level.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T08:42:25.081Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "enemy_ai.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\enemy_ai.cpp",
+              "RelativeDocumentMoniker": "src\\student\\enemy_ai.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\enemy_ai.cpp",
+              "RelativeToolTip": "src\\student\\enemy_ai.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T08:42:19Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "gameplay.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\gameplay.cpp",
+              "RelativeDocumentMoniker": "src\\student\\gameplay.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\gameplay.cpp",
+              "RelativeToolTip": "src\\student\\gameplay.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T07:57:42.642Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "navmesh.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navmesh.cpp",
+              "RelativeDocumentMoniker": "src\\student\\navmesh.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navmesh.cpp",
+              "RelativeToolTip": "src\\student\\navmesh.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T07:57:29.85Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "navigation_agent.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navigation_agent.cpp",
+              "RelativeDocumentMoniker": "src\\student\\navigation_agent.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\navigation_agent.cpp",
+              "RelativeToolTip": "src\\student\\navigation_agent.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T07:57:26.29Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "pathfinding.cpp",
+              "DocumentMoniker": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\pathfinding.cpp",
+              "RelativeDocumentMoniker": "src\\student\\pathfinding.cpp",
+              "ToolTip": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\src\\student\\pathfinding.cpp*",
+              "RelativeToolTip": "src\\student\\pathfinding.cpp*",
+              "ViewState": "AgIAAAEAAAAAAAAAAAASwBMAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-11-02T07:52:45.099Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

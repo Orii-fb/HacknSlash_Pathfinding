@@ -1,0 +1,12 @@
+﻿  level.cpp
+  navigation_debug.cpp
+  simulation.cpp
+  enemy_ai.cpp
+  gameplay.cpp
+  navigation_agent.cpp
+  navmesh.cpp
+  pathfinding.cpp
+C:\Users\dsok\source\repos\HacknSlash_Pathfinding\src\student\pathfinding.cpp(7,9): warning C4189: 'current' : variable locale initialisée mais non référencée
+C:\Users\dsok\source\repos\HacknSlash_Pathfinding\src\student\pathfinding.cpp(9,9): warning C4189: 'next' : variable locale initialisée mais non référencée
+C:\Users\dsok\source\repos\HacknSlash_Pathfinding\src\student\pathfinding.cpp(8,12): warning C4189: 'candidate' : variable locale initialisée mais non référencée
+  cpe_core.vcxproj -> C:\Users\dsok\source\repos\HacknSlash_Pathfinding\bin\x64\Debug\cpe_core.lib

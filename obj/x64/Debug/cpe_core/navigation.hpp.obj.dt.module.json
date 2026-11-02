@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\vs2026\\..\\obj\\x64\\Debug\\cpe_core\\navigation.obj",
+            "outputs": [
+                "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\vs2026\\..\\obj\\x64\\Debug\\cpe_core\\navigation.hpp.obj.dt.module.json",
+                "C:\\Users\\dsok\\source\\repos\\HacknSlash_Pathfinding\\vs2026\\..\\obj\\x64\\Debug\\cpe_core\\navigation.hpp.obj.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}
