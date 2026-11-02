@@ -1,4 +1,5 @@
 #include "cpe/navigation.hpp"
+#include <chrono>
 #include <utility>
 namespace cpe {
 bool NavMesh::Build() {
@@ -191,10 +192,94 @@ bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
     return true;
 }
 Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
-    // TODO J3 : relier localisation, recherche sur graphe et trajet géométrique.
-    (void)from;
-    (void)to;
-    (void)algorithm;
-    return {};
+    const auto started = std::chrono::steady_clock::now();
+    Path path;
+    const auto finish = [&]() {
+        path.queryMicroseconds = std::chrono::duration<double, std::micro>(
+            std::chrono::steady_clock::now() - started).count();
+        return path;
+    };
+    const auto fail = [&](Status status) {
+        path.search.status = status;
+        path.points.clear();
+        path.length = std::numeric_limits<double>::infinity();
+        return finish();
+    };
+
+    if (!built_ || !Finite(from) || !Finite(to) || graph_.size() != polygons_.size())
+        return fail(Status::InvalidInput);
+
+    const int start = Locate(from);
+    const int goal = Locate(to);
+    if (start < 0 || goal < 0) return fail(Status::OutsideNavMesh);
+    if (algorithm != Algorithm::Dijkstra && algorithm != Algorithm::AStar)
+        return fail(Status::InvalidInput);
+
+    if (algorithm == Algorithm::Dijkstra) {
+        path.search = Dijkstra(graph_, start, goal);
+    } else {
+        std::vector<double> heuristic;
+        heuristic.reserve(polygons_.size());
+        for (const Polygon& polygon : polygons_) {
+            const double estimate = Distance(polygon.center, polygons_[goal].center);
+            if (!std::isfinite(estimate)) return fail(Status::InvalidInput);
+            heuristic.push_back(estimate);
+        }
+        path.search = AStar(graph_, start, goal, heuristic);
+    }
+
+    if (path.search.status != Status::Found) return finish();
+    if (path.search.nodes.empty() || path.search.nodes.front() != start ||
+        path.search.nodes.back() != goal) return fail(Status::InvalidInput);
+    for (const int node : path.search.nodes) {
+        if (node < 0 || node >= static_cast<int>(polygons_.size()))
+            return fail(Status::InvalidInput);
+    }
+    if (start == goal && path.search.nodes.size() != 1)
+        return fail(Status::InvalidInput);
+
+    const auto append = [&](Vec2 point) {
+        if (!Finite(point)) return false;
+        if (path.points.empty() || !Near(path.points.back(), point))
+            path.points.push_back(point);
+        return true;
+    };
+
+    if (Near(from, to)) {
+        if (!append(from)) return fail(Status::InvalidInput);
+    } else if (start == goal) {
+        if (!append(from) || !append(to)) return fail(Status::InvalidInput);
+    } else {
+        if (!append(from) || !append(polygons_[start].center))
+            return fail(Status::InvalidInput);
+
+        for (std::size_t i = 1; i < path.search.nodes.size(); ++i) {
+            const int previous = path.search.nodes[i - 1];
+            const int current = path.search.nodes[i];
+            const Portal* portal = nullptr;
+            for (const Portal& candidate : portals_) {
+                if ((candidate.a == previous && candidate.b == current) ||
+                    (candidate.a == current && candidate.b == previous)) {
+                    portal = &candidate;
+                    break;
+                }
+            }
+            if (portal == nullptr) return fail(Status::InvalidInput);
+
+            const Vec2 midpoint = (portal->p + portal->q) * 0.5;
+            if (!append(midpoint) || !append(polygons_[current].center))
+                return fail(Status::InvalidInput);
+        }
+        if (!append(to)) return fail(Status::InvalidInput);
+    }
+
+    path.length = 0.0;
+    for (std::size_t i = 1; i < path.points.size(); ++i) {
+        if (!SegmentInside(path.points[i - 1], path.points[i]))
+            return fail(Status::InvalidInput);
+        path.length += Distance(path.points[i - 1], path.points[i]);
+        if (!std::isfinite(path.length)) return fail(Status::InvalidInput);
+    }
+    return finish();
 }
 }
