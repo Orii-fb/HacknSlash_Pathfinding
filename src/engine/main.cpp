@@ -1,8 +1,10 @@
 #include "cpe/simulation.hpp"
 #include "raylib.h"
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -35,6 +37,34 @@ static void DrawNavigation(const cpe::NavMesh& mesh) {
 static void DrawPath(const cpe::Path& path, Color color) {
     for (std::size_t i=1; i<path.points.size(); ++i)
         DrawLine3D(World(path.points[i-1],.15f), World(path.points[i],.15f), color);
+}
+static void DrawAttackIndicator(Vec2 position, Vec2 facing) {
+    const double center = std::atan2(facing.z, facing.x);
+    const double halfAngle = std::acos(cpe::combat::kPlayerAttackCosine);
+    const double radius = cpe::combat::kPlayerAttackRange;
+    Vector3 previous = World(position + Vec2{radius*std::cos(center-halfAngle),
+        radius*std::sin(center-halfAngle)}, .12f);
+    for (int i=1; i<=12; ++i) {
+        const double angle = center-halfAngle + 2*halfAngle*i/12;
+        Vector3 point = World(position + Vec2{radius*std::cos(angle),radius*std::sin(angle)},.12f);
+        DrawLine3D(previous,point,Color{255,210,70,220});
+        previous=point;
+    }
+    DrawLine3D(World(position,.12f),
+        World(position+Vec2{radius*std::cos(center-halfAngle),radius*std::sin(center-halfAngle)},.12f),
+        Color{255,210,70,220});
+    DrawLine3D(World(position,.12f),
+        World(position+Vec2{radius*std::cos(center+halfAngle),radius*std::sin(center+halfAngle)},.12f),
+        Color{255,210,70,220});
+}
+static void DrawHealthBar(Vec2 position, int health, int maximum, float height) {
+    if (maximum <= 0) return;
+    const float halfWidth=.34f;
+    const float fraction=static_cast<float>(std::max(0,health))/maximum;
+    const Vector3 left=World(position+Vec2{-halfWidth,0},height);
+    const Vector3 right=World(position+Vec2{halfWidth,0},height);
+    DrawLine3D(left,right,Color{50,20,20,255});
+    DrawLine3D(left,World(position+Vec2{-halfWidth+2*halfWidth*fraction,0},height),GREEN);
 }
 static fs::path FindData(const char* executable, const fs::path& overrideDir) {
     if (!overrideDir.empty()) {
@@ -153,13 +183,31 @@ int main(int argc, char** argv) {
                 DrawCubeWires(World(at,float(wall.height*.5)),sx,float(wall.height),sz,Color{118,140,170,255});
             }
             float radius=float(sim->level.agentRadius);
-            DrawCylinder(World(sim->player.position,0),radius,radius,.7f,12,GREEN);
+            const Color playerColor=sim->player.hitFlashTime>0?WHITE:GREEN;
+            DrawCylinder(World(sim->player.position,0),radius,radius,.7f,12,playerColor);
             DrawLine3D(World(sim->player.position,.8f),
                 World(sim->player.position+sim->player.facing*.7,.8f),WHITE);
+            DrawHealthBar(sim->player.position,sim->player.hitPoints,
+                sim->player.maxHitPoints,.95f);
+            if (sim->player.attackDisplayTime>0)
+                DrawAttackIndicator(sim->player.position,sim->player.facing);
             for (int i=0; i<static_cast<int>(sim->enemies.size()); ++i) {
                 const auto& e=sim->enemies[i];
                 bool heavy=e.kind==cpe::EnemyKind::Heavy;
-                DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,heavy?6:10,heavy?MAROON:RED);
+                const Color enemyColor=e.state==cpe::State::Dead?DARKGRAY:
+                    e.hitFlashTime>0?WHITE:heavy?MAROON:RED;
+                DrawCylinder(World(e.position,0),radius,radius,heavy?.85f:.58f,
+                    heavy?6:10,enemyColor);
+                if (e.state!=cpe::State::Dead)
+                    DrawHealthBar(e.position,e.hitPoints,e.maxHitPoints,heavy?1.0f:.78f);
+                if (e.state==cpe::State::Windup) {
+                    DrawCircle3D(World(e.position,.1f),
+                        static_cast<float>(heavy?cpe::combat::kHeavyAttackRange:
+                            cpe::combat::kLightAttackRange),{1,0,0},90,
+                        heavy?Color{255,80,40,220}:Color{255,190,40,220});
+                    DrawLine3D(World(e.position,.9f),
+                        World(e.position+e.facing*.75,.9f),YELLOW);
+                }
                 if (i==selected) DrawCircle3D(World(e.position,.08f),radius+.15f,{1,0,0},90,YELLOW);
                 if (showPaths && i==selected) DrawPath(e.navigator.path,MAGENTA);
             }
@@ -169,24 +217,41 @@ int main(int argc, char** argv) {
             }
             EndMode3D();
             if (showHud) {
-                DrawRectangle(12,12,GetScreenWidth()-24,140,Fade(BLACK,.84f));
+                DrawRectangle(12,12,GetScreenWidth()-24,154,Fade(BLACK,.84f));
                 DrawText("CAMPUS PATH ENGINE - SOCLE ETUDIANT",25,24,22,WHITE);
                 DrawText(TextFormat("%s | Selection: %s | NavMesh: %s",
                     sim->level.title.c_str(),cpe::Name(sim->algorithm),
                     sim->level.navmesh.IsBuilt()?"Construit":"A IMPLEMENTER"),25,55,18,LIGHTGRAY);
-                DrawText("Navigation, IA et gameplay : fonctions a completer dans src/student/",25,80,18,YELLOW);
+                DrawText(TextFormat("PV joueur : %d / %d | Ennemis vivants : %d",
+                    sim->player.hitPoints,sim->player.maxHitPoints,
+                    static_cast<int>(std::count_if(sim->enemies.begin(),sim->enemies.end(),
+                        [](const cpe::Enemy& enemy){return enemy.state!=cpe::State::Dead;}))),
+                    25,80,18,sim->player.hitPoints<=3?ORANGE:LIGHTGRAY);
+                if (!sim->enemies.empty()) {
+                    const auto& selectedEnemy=sim->enemies[static_cast<std::size_t>(selected)%sim->enemies.size()];
+                    DrawText(TextFormat("Ennemi selectionne : %s | PV %d/%d | Etat %s",
+                        selectedEnemy.kind==cpe::EnemyKind::Heavy?"lourd":"leger",
+                        selectedEnemy.hitPoints,selectedEnemy.maxHitPoints,
+                        cpe::Name(selectedEnemy.state)),25,105,16,
+                        selectedEnemy.state==cpe::State::Windup?ORANGE:LIGHTGRAY);
+                }
                 if (hasProbe) {
                     DrawText(TextFormat("Sonde: %s | %d developpes | %.2f us",
                         cpe::Name(probe.search.status),probe.search.expanded,probe.queryMicroseconds),
-                        25,105,18,SKYBLUE);
+                        25,126,16,SKYBLUE);
                 }
-                DrawText("F1 surfaces | F2 chemins | F3 HUD | Tab algo | N selection | F5 scene | P pause | R reset",
-                    25,130,16,GRAY);
+                DrawText("ZQSD/WASD/fleches: bouger | Espace: attaquer | N: cible | Tab: algo | R: recommencer | F5: scene | P: pause",
+                    25,141,14,GRAY);
                 DrawRectangle(12,GetScreenHeight()-48,GetScreenWidth()-24,36,Fade(BLACK,.8f));
-                DrawText("ZQSD / WASD / fleches : bouger | Clic gauche : requete | Espace : point d'extension gameplay",
+                DrawText("Espace : attaque orientee | Clic gauche : sonde | F1 surfaces | F2 chemins | F3 HUD",
                     25,GetScreenHeight()-39,16,WHITE);
             }
             if (paused) DrawText("PAUSE",GetScreenWidth()/2-55,170,32,YELLOW);
+            if (sim->player.hitPoints<=0) {
+                DrawRectangle(GetScreenWidth()/2-235,GetScreenHeight()/2-32,470,64,Fade(BLACK,.88f));
+                DrawText("JOUEUR MORT - R POUR RECOMMENCER",
+                    GetScreenWidth()/2-215,GetScreenHeight()/2-10,22,RED);
+            }
             EndDrawing();
             if (smoke && ++frames>=90) break;
         }

@@ -207,6 +207,129 @@ static int NavMeshContract() {
         cpe::Near(simulation.enemies[0].position,deadEnemyPosition),
         "dead enemy does not resume pursuit");
 
+    cpe::Level combatLevel;
+    combatLevel.bounds={{-5,-5},{5,5}};
+    combatLevel.agentRadius=0.25;
+    combatLevel.playerSpawn={-1,0};
+    combatLevel.spawns={{{0,0},cpe::EnemyKind::Light}};
+    combatLevel.navmesh.SetSourcePolygons({{{-5,-5},{5,-5},{5,5},{-5,5}}});
+    Check(combatLevel.navmesh.Build(),"combat test navmesh");
+    cpe::Simulation combatSimulation(combatLevel);
+    combatSimulation.player.facing={1,0};
+    const cpe::Vec2 enemyBeforeKnockback=combatSimulation.enemies[0].position;
+    combatSimulation.Update({},true,0.05);
+    Check(combatSimulation.enemies[0].hitPoints==cpe::combat::kLightHitPoints-1,
+        "player attack damages an enemy in its forward range");
+    Check(combatSimulation.enemies[0].position.x>enemyBeforeKnockback.x &&
+        combatSimulation.enemies[0].knockbackTime>0,
+        "player attack knocks a living enemy away");
+    combatSimulation.Update({},true,0.05);
+    Check(combatSimulation.enemies[0].hitPoints==cpe::combat::kLightHitPoints-1,
+        "player attack cooldown prevents duplicate hits");
+    for (int step=0;step<30 &&
+         combatSimulation.player.hitPoints==combatSimulation.player.maxHitPoints;++step)
+        combatSimulation.Update({},false,0.05);
+    Check(combatSimulation.player.hitPoints<combatSimulation.player.maxHitPoints,
+        "enemy impact damages the player after its windup");
+    const cpe::Vec2 playerAfterImpact=combatSimulation.player.position;
+    for (int step=0;step<4;++step) combatSimulation.Update({},false,0.05);
+    Check(cpe::Distance(combatSimulation.player.position,playerAfterImpact)>0.1,
+        "enemy impact knocks the player away");
+    for (int step=0;step<12;++step) combatSimulation.Update({},false,0.05);
+    combatSimulation.player.position={-1,0};
+    combatSimulation.enemies[0].position={0,0};
+    combatSimulation.enemies[0].knockbackVelocity={};
+    combatSimulation.enemies[0].knockbackTime=0;
+    combatSimulation.enemies[0].state=cpe::State::Chase;
+    combatSimulation.Update({},true,0.05);
+    Check(combatSimulation.enemies[0].state==cpe::State::Dead &&
+        combatSimulation.enemies[0].hitPoints==0,
+        "player can kill an enemy and killed enemies stop acting");
+    const cpe::Vec2 slainPosition=combatSimulation.enemies[0].position;
+    for (int step=0;step<5;++step) combatSimulation.Update({},false,0.05);
+    Check(cpe::Near(combatSimulation.enemies[0].position,slainPosition),
+        "dead enemy remains stationary");
+    combatSimulation.Reset();
+    Check(combatSimulation.player.hitPoints==combatSimulation.player.maxHitPoints &&
+        combatSimulation.enemies[0].hitPoints==combatSimulation.enemies[0].maxHitPoints &&
+        combatSimulation.enemies[0].state==cpe::State::Waiting,
+        "reset restores combat health and enemy state");
+
+    cpe::Simulation behindTarget(combatLevel);
+    behindTarget.enemies[0].position={-1,0.8};
+    behindTarget.player.facing={1,0};
+    behindTarget.Update({},true,0.05);
+    Check(behindTarget.enemies[0].hitPoints==behindTarget.enemies[0].maxHitPoints,
+        "melee attack does not hit a target behind the player");
+
+    cpe::Level blockedCombatLevel=combatLevel;
+    blockedCombatLevel.walls.push_back({{{-0.1,-1},{0.1,1}},1.5});
+    cpe::Simulation blockedAttack(blockedCombatLevel);
+    blockedAttack.player.facing={1,0};
+    blockedAttack.Update({},true,0.05);
+    Check(blockedAttack.enemies[0].hitPoints==blockedAttack.enemies[0].maxHitPoints,
+        "wall blocks the player's melee attack");
+
+    cpe::Level knockbackWallLevel=combatLevel;
+    knockbackWallLevel.playerSpawn={-2,0};
+    knockbackWallLevel.spawns={{{-1,0},cpe::EnemyKind::Light}};
+    knockbackWallLevel.walls.push_back({{{-2.6,-1},{-2.4,1}},1.5});
+    cpe::Simulation wallKnockback(knockbackWallLevel);
+    wallKnockback.player.facing={1,0};
+    wallKnockback.Update({},true,0.05);
+    for (int step=0;step<10;++step) wallKnockback.Update({},false,0.05);
+    Check(knockbackWallLevel.CanStand(wallKnockback.player.position,
+        knockbackWallLevel.agentRadius) && wallKnockback.player.position.x>=-2.15-1e-6,
+        "wall collision prevents knockback from pushing the player through geometry");
+
+    cpe::Simulation blockedEnemyAttack(blockedCombatLevel);
+    for (int step=0;step<30;++step) blockedEnemyAttack.Update({},false,0.05);
+    Check(blockedEnemyAttack.player.hitPoints==blockedEnemyAttack.player.maxHitPoints,
+        "wall blocks enemy damage at attack impact");
+
+    cpe::Simulation escapedWindup(combatLevel);
+    escapedWindup.Update({},false,0.05);
+    Check(escapedWindup.enemies[0].state==cpe::State::Windup,
+        "enemy starts a close-range attack windup");
+    escapedWindup.player.position={-4,0};
+    for (int step=0;step<12;++step) escapedWindup.Update({},false,0.05);
+    Check(escapedWindup.player.hitPoints==escapedWindup.player.maxHitPoints,
+        "enemy rechecks range at attack impact");
+
+    cpe::Level heavyCombatLevel=combatLevel;
+    heavyCombatLevel.spawns={{{0,0},cpe::EnemyKind::Heavy}};
+    cpe::Simulation heavyCombat(heavyCombatLevel);
+    heavyCombat.Update({},false,0.05);
+    Check(heavyCombat.enemies[0].state==cpe::State::Windup,
+        "heavy enemy telegraphs its attack");
+    const cpe::Vec2 heavyWindupPosition=heavyCombat.enemies[0].position;
+    for (int step=0;step<5;++step) heavyCombat.Update({},false,0.05);
+    Check(cpe::Near(heavyCombat.enemies[0].position,heavyWindupPosition),
+        "heavy enemy stays still during its attack windup");
+    for (int step=0;step<30 &&
+         heavyCombat.player.hitPoints==heavyCombat.player.maxHitPoints;++step)
+        heavyCombat.Update({},false,0.05);
+    Check(heavyCombat.player.hitPoints==heavyCombat.player.maxHitPoints-
+        cpe::combat::kHeavyDamage,"heavy enemy deals its distinct impact damage");
+    const cpe::Vec2 heavyPlayerAfterImpact=heavyCombat.player.position;
+    for (int step=0;step<4;++step) heavyCombat.Update({},false,0.05);
+    Check(cpe::Distance(heavyCombat.player.position,heavyPlayerAfterImpact)>0.1,
+        "heavy attack applies a clear knockback to the player");
+
+    cpe::Simulation playerDeath(heavyCombatLevel);
+    playerDeath.player.hitPoints=cpe::combat::kHeavyDamage;
+    for (int step=0;step<24;++step) playerDeath.Update({},false,0.05);
+    Check(playerDeath.player.hitPoints==0,"player can be defeated by an enemy attack");
+    const cpe::Vec2 deathPlayerPosition=playerDeath.player.position;
+    const cpe::Vec2 deathEnemyPosition=playerDeath.enemies[0].position;
+    playerDeath.Update({1,0},true,0.05);
+    Check(cpe::Near(playerDeath.player.position,deathPlayerPosition) &&
+        cpe::Near(playerDeath.enemies[0].position,deathEnemyPosition),
+        "simulation stops after player death until reset");
+    playerDeath.Reset();
+    Check(playerDeath.player.hitPoints==playerDeath.player.maxHitPoints,
+        "reset recovers the player from defeat");
+
     cpe::Level arenaLevel;
     arenaLevel.bounds={{-8,-6},{8,6}};
     arenaLevel.agentRadius=0.25;
