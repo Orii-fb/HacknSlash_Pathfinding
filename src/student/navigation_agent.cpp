@@ -5,16 +5,19 @@ void Navigator::Plan(const Level& level, Vec2 position,
     // TODO J4 : gérer la requête, sa temporisation et les échecs.
     if (!Finite(position) && !Finite(target)) {
         Invalidate();
+        return;
     }
 
     int locatePos = level.navmesh.Locate(position);
     int locateTarget = level.navmesh.Locate(target);
+    bool bothCanStand = !level.CanStand(position, level.agentRadius && !level.CanStand(position, level.agentRadius));
 
-    if (!locatePos && !locateTarget) {
+    if (!locatePos && !locateTarget && bothCanStand) {
         Invalidate();
+        return;
     }
-
-    
+        
+    path = level.navmesh.FindPath(position, target, algorithm);
 
     level.CanMove(position, target, level.agentRadius);
 
