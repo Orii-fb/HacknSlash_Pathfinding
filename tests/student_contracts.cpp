@@ -46,8 +46,30 @@ static int SearchContract(bool astar) {
     Check(query(graph,-1,4).status==cpe::Status::InvalidInput,"invalid index");
     auto same=query(graph,0,0);
     Check(same.status==cpe::Status::Found && same.cost==0,"same start goal");
+    Check(result.expanded>0 && std::isfinite(result.microseconds),
+        "search metrics should be populated");
     graph[0][0].cost=-1;
     Check(query(graph,0,4).status==cpe::Status::InvalidInput,"negative edge");
+    graph[0][0].cost=2;
+    graph[5].push_back({6,1});
+    Check(query(graph,0,4).status==cpe::Status::InvalidInput,"invalid edge endpoint");
+    graph[5].clear();
+    if (astar) {
+        Check(cpe::AStar(graph,0,4,{0,0}).status==cpe::Status::InvalidInput,
+            "heuristic size");
+        auto invalidGoalHeuristic=std::vector<double>(graph.size(),0.0);
+        invalidGoalHeuristic[4]=1.0;
+        Check(cpe::AStar(graph,0,4,invalidGoalHeuristic).status==
+            cpe::Status::InvalidInput,"heuristic must be zero at goal");
+
+        cpe::Graph reopening(4);
+        reopening[0]={{1,2.0},{2,1.0}};
+        reopening[1]={{3,2.0}};
+        reopening[2]={{1,0.5},{3,100.0}};
+        auto reopened=cpe::AStar(reopening,0,3,{3.5,0.0,2.5,0.0});
+        Check(reopened.status==cpe::Status::Found &&
+            std::abs(reopened.cost-3.5)<1e-4,"A* should reopen improved nodes");
+    }
     std::cout << "PASS - search result contract\n";
     return 0;
 }
