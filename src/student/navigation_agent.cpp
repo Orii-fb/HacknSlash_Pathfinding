@@ -4,9 +4,10 @@
 
 namespace cpe {
 namespace {
-constexpr double kTargetChangeDistance = 0.35;
+constexpr double kTargetChangeDistance = 0.12;
 constexpr double kWaypointRadius = 0.05;
 constexpr double kRetryDelay = 0.25;
+constexpr double kReplanInterval = 0.08;
 constexpr double kStuckDelay = 0.5;
 }
 
@@ -43,7 +44,7 @@ void Navigator::Plan(const Level& level, Vec2 position,
     ++requests;
     next = 0;
     stuckFor = 0;
-    retryAfter = kRetryDelay;
+    retryAfter = path.search.status == Status::Found ? kReplanInterval : kRetryDelay;
 
     if (path.search.status != Status::Found || path.points.empty()) return;
     if (!Finite(path.points.front())) {

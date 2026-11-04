@@ -1,4 +1,5 @@
 #include "cpe/simulation.hpp"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -104,6 +105,10 @@ static int NavMeshContract() {
         Check(mesh.FindPath({1,1},{3,3},algorithm).search.status==cpe::Status::OutsideNavMesh,
             "outside destination");
     }
+    const auto directPath=mesh.FindPath({1,1},{5,1},cpe::Algorithm::Dijkstra);
+    Check(directPath.search.status==cpe::Status::Found &&
+        directPath.points.size()==2 && std::abs(directPath.length-4.0)<1e-4,
+        "path smoothing avoids unnecessary polygon-center detours");
 
     cpe::Level level;
     level.bounds={{0,0},{8,4}};
@@ -149,6 +154,90 @@ static int NavMeshContract() {
     blockedNavigator.Plan(blockedLevel,position,{7,1},cpe::Algorithm::Dijkstra);
     Check(blockedNavigator.requests==blockedRequests+1,
         "blocked navigator retries after its cooldown");
+
+    cpe::Level chaseLevel=level;
+    chaseLevel.bounds={{0,0},{24,4}};
+    chaseLevel.navmesh.SetSourcePolygons({{{0,0},{24,0},{24,4},{0,4}}});
+    Check(chaseLevel.navmesh.Build(),"wide pursuit navmesh");
+    chaseLevel.playerSpawn={6,2};
+    chaseLevel.spawns={{{1,2},cpe::EnemyKind::Light}};
+    cpe::Simulation simulation(chaseLevel);
+    const cpe::Vec2 initialEnemyPosition=simulation.enemies[0].position;
+    simulation.Update({},false,0.05);
+    Check(simulation.enemies[0].state==cpe::State::Chase,
+        "enemy detects and begins pursuing the player");
+    Check(cpe::Distance(simulation.enemies[0].position,initialEnemyPosition)>0,
+        "pursuing enemy follows its path");
+    Check(simulation.RequestCount()==1,"pursuit plans a path");
+    simulation.Update({},false,0.05);
+    Check(simulation.RequestCount()==1,"pursuit reuses its route between replans");
+
+    double maximumEnemyStep=0;
+    for (int step=0;step<100;++step) {
+        const cpe::Vec2 before=simulation.enemies[0].position;
+        simulation.Update({1,0},false,0.05);
+        maximumEnemyStep=std::max(maximumEnemyStep,
+            cpe::Distance(before,simulation.enemies[0].position));
+    }
+    Check(simulation.RequestCount()>1,
+        "moving player causes pursuit routes to be updated");
+    Check(maximumEnemyStep<=2.5*0.05+1e-6,
+        "light enemy stays slower than the player");
+    Check(cpe::Distance(simulation.enemies[0].position,simulation.player.position)>1.5,
+        "moving player can maintain distance from a pursuing enemy");
+
+    chaseLevel.spawns={{{1,2},cpe::EnemyKind::Heavy}};
+    cpe::Simulation heavySimulation(chaseLevel);
+    heavySimulation.Update({},false,0.05);
+    const cpe::Vec2 heavyStart=heavySimulation.enemies[0].position;
+    heavySimulation.Update({},false,0.05);
+    Check(cpe::Distance(heavySimulation.enemies[0].position,heavyStart)<=1.8*0.05+1e-6,
+        "heavy enemy moves at a slower pace");
+
+    simulation.player.position={40,2};
+    simulation.Update({},false,0.05);
+    Check(simulation.enemies[0].state==cpe::State::Idle,
+        "enemy disengages after the player leaves pursuit range");
+
+    simulation.enemies[0].state=cpe::State::Dead;
+    simulation.player.position={2,2};
+    const cpe::Vec2 deadEnemyPosition=simulation.enemies[0].position;
+    simulation.Update({},false,0.05);
+    Check(simulation.enemies[0].state==cpe::State::Dead &&
+        cpe::Near(simulation.enemies[0].position,deadEnemyPosition),
+        "dead enemy does not resume pursuit");
+
+    cpe::Level arenaLevel;
+    arenaLevel.bounds={{-8,-6},{8,6}};
+    arenaLevel.agentRadius=0.25;
+    arenaLevel.walls.push_back({{{-1.5,-2},{1.5,2}},1.5});
+    arenaLevel.navmesh.SetSourcePolygons({
+        {{-7.7,-5.7},{-1.8,-5.7},{-1.8,-2.3},{-7.7,-2.3}},
+        {{-1.8,-5.7},{1.8,-5.7},{1.8,-2.3},{-1.8,-2.3}},
+        {{1.8,-5.7},{7.7,-5.7},{7.7,-2.3},{1.8,-2.3}},
+        {{-7.7,-2.3},{-1.8,-2.3},{-1.8,2.3},{-7.7,2.3}},
+        {{1.8,-2.3},{7.7,-2.3},{7.7,2.3},{1.8,2.3}},
+        {{-7.7,2.3},{-1.8,2.3},{-1.8,5.7},{-7.7,5.7}},
+        {{-1.8,2.3},{1.8,2.3},{1.8,5.7},{-1.8,5.7}},
+        {{1.8,2.3},{7.7,2.3},{7.7,5.7},{1.8,5.7}}
+    });
+    Check(arenaLevel.navmesh.Build(),"arena pursuit navmesh");
+    arenaLevel.playerSpawn={-5,0};
+    arenaLevel.spawns={{{0,-2.5},cpe::EnemyKind::Light}};
+    cpe::Simulation arenaSimulation(arenaLevel);
+    Check(!arenaLevel.Visible(arenaSimulation.enemies[0].position,
+        arenaSimulation.player.position),"arena wall blocks direct sight");
+    const cpe::Vec2 arenaEnemyStart=arenaSimulation.enemies[0].position;
+    arenaSimulation.Update({},false,0.05);
+    Check(arenaSimulation.enemies[0].state==cpe::State::Chase &&
+        cpe::Distance(arenaSimulation.enemies[0].position,arenaEnemyStart)>0,
+        "enemy starts navigating toward a nearby player behind a wall");
+    const double initialArenaDistance=
+        cpe::Distance(arenaSimulation.enemies[0].position,arenaSimulation.player.position);
+    for (int step=0;step<100;++step)
+        arenaSimulation.Update({},false,0.05);
+    Check(cpe::Distance(arenaSimulation.enemies[0].position,arenaSimulation.player.position)<
+        initialArenaDistance-1.0,"enemy follows a smoothed route around the arena wall");
 
     std::cout << "PASS - NavMesh result contract\n";
     return 0;

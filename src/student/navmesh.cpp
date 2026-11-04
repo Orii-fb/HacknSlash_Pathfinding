@@ -273,6 +273,21 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
         if (!append(to)) return fail(Status::InvalidInput);
     }
 
+    std::vector<Vec2> smoothed;
+    smoothed.reserve(path.points.size());
+    std::size_t anchor = 0;
+    smoothed.push_back(path.points.front());
+    while (anchor + 1 < path.points.size()) {
+        std::size_t next = path.points.size() - 1;
+        while (next > anchor + 1 && !SegmentInside(path.points[anchor], path.points[next]))
+            --next;
+        if (!SegmentInside(path.points[anchor], path.points[next]))
+            return fail(Status::InvalidInput);
+        smoothed.push_back(path.points[next]);
+        anchor = next;
+    }
+    path.points = std::move(smoothed);
+
     path.length = 0.0;
     for (std::size_t i = 1; i < path.points.size(); ++i) {
         if (!SegmentInside(path.points[i - 1], path.points[i]))
