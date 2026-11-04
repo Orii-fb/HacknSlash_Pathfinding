@@ -10,6 +10,10 @@ struct Navigator {
     Path path;
     std::size_t next = 0;
     std::size_t requests = 0;
+    Vec2 target;
+    bool hasTarget = false;
+    double retryAfter = 0;
+    double stuckFor = 0;
     void Invalidate();
     void Plan(const Level& level, Vec2 position, Vec2 target, Algorithm algorithm);
     Vec2 Follow(const Level& level, Vec2 position, double speed, double dt);

@@ -1,4 +1,4 @@
-#include "cpe/navigation.hpp"
+#include "cpe/simulation.hpp"
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -104,6 +104,52 @@ static int NavMeshContract() {
         Check(mesh.FindPath({1,1},{3,3},algorithm).search.status==cpe::Status::OutsideNavMesh,
             "outside destination");
     }
+
+    cpe::Level level;
+    level.bounds={{0,0},{8,4}};
+    level.agentRadius=0.25;
+    level.navmesh.SetSourcePolygons({{{0,0},{8,0},{8,4},{0,4}}});
+    Check(level.navmesh.Build(),"navigator test navmesh");
+    cpe::Navigator navigator;
+    navigator.Plan(level,{1,1},{7,1},cpe::Algorithm::Dijkstra);
+    Check(navigator.path.search.status==cpe::Status::Found,"navigator plans a route");
+    Check(navigator.requests==1,"first plan makes one request");
+    navigator.Plan(level,{1,1},{7,1},cpe::Algorithm::Dijkstra);
+    Check(navigator.requests==1,"unchanged target does not replan");
+
+    cpe::Vec2 position{1,1};
+    for (int step=0;step<100 && cpe::Distance(position,{7,1})>0.05;++step) {
+        position=navigator.Follow(level,position,2.0,0.05);
+        Check(level.CanStand(position,level.agentRadius),"navigator respects collisions");
+    }
+    Check(cpe::Distance(position,{7,1})<=0.05,"navigator reaches its destination");
+    navigator.Plan(level,position,{7,1},cpe::Algorithm::Dijkstra);
+    Check(navigator.requests==1,"completed route does not replan");
+
+    navigator.Invalidate();
+    navigator.Plan(level,position,{9,1},cpe::Algorithm::Dijkstra);
+    Check(navigator.path.search.status==cpe::Status::OutsideNavMesh,
+        "navigator preserves planning failure");
+    navigator.Plan(level,position,{9,1},cpe::Algorithm::Dijkstra);
+    Check(navigator.requests==2,"failed route is throttled");
+
+    cpe::Level blockedLevel=level;
+    blockedLevel.walls.push_back({{{3,0},{4,2}},1.5});
+    cpe::Navigator blockedNavigator;
+    blockedNavigator.Plan(blockedLevel,{1,1},{7,1},cpe::Algorithm::Dijkstra);
+    position={1,1};
+    for (int step=0;step<30 &&
+         blockedNavigator.path.search.status==cpe::Status::Found;++step)
+        position=blockedNavigator.Follow(blockedLevel,position,2.0,0.05);
+    Check(blockedNavigator.path.search.status==cpe::Status::NoPath,
+        "blocked navigator abandons its route");
+    const std::size_t blockedRequests=blockedNavigator.requests;
+    for (int step=0;step<6;++step)
+        position=blockedNavigator.Follow(blockedLevel,position,2.0,0.05);
+    blockedNavigator.Plan(blockedLevel,position,{7,1},cpe::Algorithm::Dijkstra);
+    Check(blockedNavigator.requests==blockedRequests+1,
+        "blocked navigator retries after its cooldown");
+
     std::cout << "PASS - NavMesh result contract\n";
     return 0;
 }

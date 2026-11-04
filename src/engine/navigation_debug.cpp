@@ -32,5 +32,9 @@ void NavMesh::SetSourcePolygons(const std::vector<std::vector<Vec2>>& source) {
 void Navigator::Invalidate() {
     path = Path{};
     next = 0;
+    target = {};
+    hasTarget = false;
+    retryAfter = 0;
+    stuckFor = 0;
 }
 }
