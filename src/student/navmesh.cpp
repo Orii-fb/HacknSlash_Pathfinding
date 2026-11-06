@@ -3,7 +3,37 @@ namespace cpe {
 bool NavMesh::Build() {
     // TODO J3 : valider et structurer source_, calculer les adjacences/portails.
     // Remplir polygons_, portals_, graph_, puis définir built_=true.
-    return false;
+    polygons_.clear();
+    portals_.clear();
+    graph_.clear();
+
+    if (source_.empty()) {
+        return false;
+    }
+
+    
+    for (int i = 0; i < source_.size(); i++) {
+        std::vector<Vec2> polyPointSource = source_[i];
+        if (source_[i].size() > 2) {
+            polygons_[i] = { source_[i] };
+
+            double xMiddle = 0;
+            double zMiddle = 0;
+
+            for (int j = 0; j < source_[i].size(); j++) {
+                xMiddle += source_[i][j].x;
+                zMiddle += source_[i][j].z;
+            }
+            polygons_[i].center = { xMiddle / source_[i].size() , zMiddle / source_[i].size() };
+
+        }
+        
+    }
+    
+
+    built_ = true;
+
+    return true;
 }
 int NavMesh::Locate(Vec2 point) const {
     // TODO J3 : localiser le point dans un polygone navigable.
