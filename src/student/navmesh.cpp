@@ -1,6 +1,10 @@
 #include "cpe/navigation.hpp"
+#include <stdexcept>
 namespace cpe {
-
+void NavMesh::AddUndirected(Graph g, int indexA, int indexB, double cost) {
+    g.at(indexA).push_back({ indexB, cost });
+    g.at(indexB).push_back({ indexA, cost });
+}
 bool NavMesh::Build() {
     // TODO J3 : valider et structurer source_, calculer les adjacences/portails.
     // Remplir polygons_, portals_, graph_, puis définir built_=true.
@@ -54,16 +58,49 @@ bool NavMesh::Build() {
             }
 
         }
+
         polygons_[i].center = { xMiddle / static_cast<double>(polySource.size()) , zMiddle / static_cast<double>(polySource.size()) };
         
     }
     
+    graph_.assign(polygons_.size(), {});
 
+    for (const Portal& portal : portals_) {
+        if (!Finite(portal.p) ||
+            !Finite(portal.q) ||
+            Distance(portal.p, portal.q) < 1e-8) {
+            throw std::invalid_argument(
+                "Portail invalide ou de longueur nulle."
+            );
+        }
+
+        const int regionA = portal.a;
+        const int regionB = portal.b;
+
+        // Les deux extrémités doivent appartenir aux deux régions.
+        if (!Contains(regionA, portal.p) ||
+            !Contains(regionA, portal.q) ||
+            !Contains(regionB, portal.p) ||
+            !Contains(regionB, portal.q)) {
+            throw std::invalid_argument(
+                "Le portail n'appartient pas aux deux regions."
+            );
+        }
+
+        const Vec2 middle = portal.Middle();
+
+        const double cost =
+            Distance(polygons_[regionA].center, middle)
+            + Distance(middle, polygons_[regionB].center);
+
+        AddUndirected(graph_, portal.a, portal.b, cost);
+    }
 
     built_ = true;
 
     return true;
 }
+
 int NavMesh::Locate(Vec2 point) const {
     // TODO J3 : localiser le point dans un polygone navigable.
     if (!Finite(point)) {
@@ -78,6 +115,7 @@ int NavMesh::Locate(Vec2 point) const {
 
     return -1;
 }
+
 bool NavMesh::Contains(int polygon, Vec2 point) const {
     // TODO J3 : test point dans polygone.
     const std::vector<Vec2> verticesPoly = polygons_[polygon].vertices;
