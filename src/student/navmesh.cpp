@@ -1,5 +1,6 @@
 #include "cpe/navigation.hpp"
 namespace cpe {
+
 bool NavMesh::Build() {
     // TODO J3 : valider et structurer source_, calculer les adjacences/portails.
     // Remplir polygons_, portals_, graph_, puis définir built_=true.
@@ -11,25 +12,53 @@ bool NavMesh::Build() {
         return false;
     }
 
-    
+    //liste des potentiels portal
+    std::vector<int> indexPolyAretes;
+    std::vector<std::pair<Vec2, Vec2>> aretes;
+    std::vector<Vec2> polySource;
     for (int i = 0; i < source_.size(); i++) {
-        std::vector<Vec2> polyPointSource = source_[i];
-        if (source_[i].size() > 2) {
-            polygons_[i] = { source_[i] };
+        polySource = source_[i];
+        if (polySource.size() < 2) {
+            return false;
+        }
+        polygons_.push_back({ polySource });
 
-            double xMiddle = 0;
-            double zMiddle = 0;
+        double xMiddle = 0;
+        double zMiddle = 0;
 
-            for (int j = 0; j < source_[i].size(); j++) {
-                xMiddle += source_[i][j].x;
-                zMiddle += source_[i][j].z;
+        for (int j = 0; j < polySource.size(); j++) {
+            // calcul du centre
+            xMiddle += polySource[j].x;
+            zMiddle += polySource[j].z;
+
+            //recherche des portals
+            Vec2 pointA = polySource[j];
+            Vec2 pointB = polySource[(j + 1) % polySource.size()];
+            std::pair<Vec2, Vec2> arete = { pointA, pointB };
+            //si l'arete est dans la liste
+
+            bool found = false;
+            for (int k = 0; k < aretes.size(); k++) {
+                if (Near(aretes[k].first, arete.first) && Near(aretes[k].second, arete.second) ||
+                    Near(aretes[k].first, arete.second) && Near(aretes[k].second, arete.first)) {
+                    //recuperer le portail avec points d'extremité et l'index des polygons
+                    portals_.push_back({ indexPolyAretes[k], j, aretes[k].first, aretes[k].second });
+                    found = true;
+                    break;
+                }
             }
-            polygons_[i].center = { xMiddle / source_[i].size() , zMiddle / source_[i].size() };
+            
+            if (!found) {
+                aretes.push_back({ pointA, pointB });
+                indexPolyAretes.push_back(i);
+            }
 
         }
+        polygons_[i].center = { xMiddle / static_cast<double>(polySource.size()) , zMiddle / static_cast<double>(polySource.size()) };
         
     }
     
+
 
     built_ = true;
 
