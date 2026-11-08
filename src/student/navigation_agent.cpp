@@ -44,15 +44,27 @@ void Navigator::Plan(const Level& level, Vec2 position,
 
 Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double dt) {
     // TODO J4 : consommer les waypoints et appliquer un déplacement valide.
+    if (path.search.status != Status::Found || speed <= 0 || dt <= 0) return position;
     double budget = speed * dt;
-    Vec2 waypoint = path.points[next];
-    double distance = Distance(path.points[next], position);
 
+    if (next < path.points.size()) {
+        if (Near(position, path.points[next])) {
+            next++;
+            return path.points[next];
+        }
+        
+        double distance = Distance(path.points[next], position);
 
-    if (level.CanMove(position, lastTarget, level.agentRadius)) {
-        level.MoveSliding(position, lastTarget, level.agentRadius);
-    }
+        if (distance <= budget) {
+            next++;
+            return path.points[next];
 
+        }
+
+        Vec2 dir = { path.points[next].x - position.x, path.points[next].z - position.z };
+
+        return position + dir * budget;
+    } 
     return position;
 }
 }

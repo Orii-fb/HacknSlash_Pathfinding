@@ -11,6 +11,7 @@ bool NavMesh::Build() {
     polygons_.clear();
     portals_.clear();
     graph_.clear();
+    built_ = false;
 
     if (source_.empty()) {
         return false;
@@ -22,7 +23,7 @@ bool NavMesh::Build() {
     std::vector<Vec2> polySource;
     for (int i = 0; i < source_.size(); i++) {
         polySource = source_[i];
-        if (polySource.size() < 2) {
+        if (polySource.size() <= 2) {
             return false;
         }
         polygons_.push_back({ polySource });
@@ -143,8 +144,9 @@ bool NavMesh::Contains(int polygon, Vec2 point) const {
 }
 bool NavMesh::SegmentInside(Vec2 from, Vec2 to) const {
     // TODO J3 : vérifier qu'un segment reste dans la surface navigable.
-    (void)from;
-    (void)to;
+    if (Locate(from) != -1 && Locate(to) != -1) {
+        return true;
+    }
     return false;
 }
 
@@ -209,6 +211,8 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
             path.points.push_back(Middle(p->p, p->q));
         }
     }
+
+    path.points.push_back(to);
 
     return path;
 }
