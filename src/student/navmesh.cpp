@@ -1,7 +1,7 @@
 #include "cpe/navigation.hpp"
 #include <stdexcept>
 namespace cpe {
-void NavMesh::AddUndirected(Graph g, int indexA, int indexB, double cost) {
+void NavMesh::AddUndirected(Graph& g, int indexA, int indexB, double cost) {
     g.at(indexA).push_back({ indexB, cost });
     g.at(indexB).push_back({ indexA, cost });
 }
@@ -46,7 +46,7 @@ bool NavMesh::Build() {
                 if (Near(aretes[k].first, arete.first) && Near(aretes[k].second, arete.second) ||
                     Near(aretes[k].first, arete.second) && Near(aretes[k].second, arete.first)) {
                     //recuperer le portail avec points d'extremité et l'index des polygons
-                    portals_.push_back({ indexPolyAretes[k], j, aretes[k].first, aretes[k].second });
+                    portals_.push_back({ indexPolyAretes[k], i, aretes[k].first, aretes[k].second });
                     found = true;
                     break;
                 }
@@ -55,6 +55,7 @@ bool NavMesh::Build() {
             if (!found) {
                 aretes.push_back({ pointA, pointB });
                 indexPolyAretes.push_back(i);
+
             }
 
         }
