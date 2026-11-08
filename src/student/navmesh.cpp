@@ -184,6 +184,9 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
     case Algorithm::AStar:
         path = { AStar(graph_, locateFrom, locateTarget, heuristicList) };
         break;
+    default:
+        path = { Dijkstra(graph_, locateFrom, locateTarget) };
+        break;
     }
 
     if (path.search.status != Status::Found) {

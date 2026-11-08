@@ -30,7 +30,11 @@ SearchResult AStar(const Graph& graph, int start, int goal,
                    const std::vector<double>& heuristic);
 
 struct Polygon { std::vector<Vec2> vertices; Vec2 center; };
-struct Portal { int a, b; Vec2 p, q; };
+struct Portal { int a, b; Vec2 p, q;
+Vec2 Middle() const {
+    return (p + q) * 0.5;
+}
+};
 struct Path {
     SearchResult search;
     std::vector<Vec2> points;
@@ -44,7 +48,7 @@ public:
     // Ne construit ni polygones de navigation, ni graphe, ni portails.
     void SetSourcePolygons(const std::vector<std::vector<Vec2>>& source);
     const std::vector<std::vector<Vec2>>& SourcePolygons() const { return source_; }
-
+    void AddUndirected(Graph& g, int indexA, int indexB, double cost);
     // À réaliser dans src/student/navmesh.cpp.
     // Build doit remplir polygons_, portals_, graph_ et définir built_=true.
     bool Build();

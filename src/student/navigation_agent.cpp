@@ -22,7 +22,7 @@ void Navigator::Plan(const Level& level, Vec2 position,
         Invalidate();
         return;
     }
-    bool hasPath = path.search.status != Status::Found;
+    bool hasPath = path.search.status == Status::Found;
     bool targetMove = !hasTarget || Distance(target, lastTarget) > 0.75;
     bool hasFinished = next >= path.points.size() && Distance(position, target);
     
