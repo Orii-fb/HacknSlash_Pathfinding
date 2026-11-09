@@ -25,7 +25,7 @@ void Navigator::Plan(const Level& level, Vec2 position,
     }
     bool hasPath = path.search.status == Status::Found;
     bool targetMove = !hasTarget || Distance(target, lastTarget) > 0.75;
-    bool hasFinished = next >= path.points.size() && Near(position, target);
+    bool hasFinished = next >= path.points.size() && Distance(position, target) < 1;
     
 
     if (hasPath && !targetMove && !hasFinished) {
@@ -52,16 +52,11 @@ Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double d
 
     if (next < path.points.size()) {
 
-        if (Near(position, path.points[next])) {
-            next++;
-            return path.points[next-1];
-        }
-
         double distance = Distance(path.points[next], position);
 
-        if (distance <= budget) {
+        if (distance <= budget + level.agentRadius * 2) {
             next++;
-            return path.points[next - 1];
+            return position;
         }
 
         Vec2 dir = { path.points[next].x - position.x, path.points[next].z - position.z };
