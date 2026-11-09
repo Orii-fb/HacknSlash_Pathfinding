@@ -17,9 +17,9 @@ void Navigator::Plan(const Level& level, Vec2 position,
 
     int locatePos = level.navmesh.Locate(position);
     int locateTarget = level.navmesh.Locate(target);
-    bool bothCanStand = !level.CanStand(position, level.agentRadius && !level.CanStand(position, level.agentRadius));
+    bool bothCanStand = !level.CanStand(position, level.agentRadius) && !level.CanStand(target, level.agentRadius);
 
-    if (!locatePos || !locateTarget || bothCanStand) {
+    if (locatePos < 0|| locateTarget < 0 || bothCanStand) {
         Invalidate();
         return;
     }

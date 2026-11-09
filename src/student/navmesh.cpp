@@ -202,6 +202,8 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
         path.points.push_back(to);
     }
 
+    //TODO : il faudrais un si -> il n'y a pas de mur sur le chemin entre le player et l'enemy
+    //TODO : au lieu de prendre le centre -> prends le moins qui se rapproche le plus de player et donner un minimum dans la droite pour pas qu'il aille au bord
     for (int i = 0; i < path.search.nodes.size(); i++) {
         int a = path.search.nodes[i];
         int b = path.search.nodes[(i+1) % path.search.nodes.size()];
