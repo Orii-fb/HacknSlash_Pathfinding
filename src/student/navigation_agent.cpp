@@ -11,6 +11,7 @@ void Navigator::Plan(const Level& level, Vec2 position,
 
         if (Finite(target)) {
             hasTarget = true;
+            lastTarget = target;
         }
     }
 
@@ -26,15 +27,16 @@ void Navigator::Plan(const Level& level, Vec2 position,
     bool targetMove = !hasTarget || Distance(target, lastTarget) > 0.75;
     bool hasFinished = next >= path.points.size() && Near(position, target);
     
-    lastTarget = target;
 
-    if (hasPath && targetMove && hasFinished) {
+    if (hasPath && !targetMove && !hasFinished) {
         return;
     }
 
     path = level.navmesh.FindPath(position, target, algorithm);
 
     next = path.points.size() > 1 ? 1 : path.points.size();
+
+    lastTarget = target;
 
     hasTarget = true;
 
@@ -51,22 +53,25 @@ Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double d
     if (next < path.points.size()) {
 
         if (Near(position, path.points[next])) {
-            return path.points[next];
+            next++;
+            return path.points[next-1];
         }
 
         double distance = Distance(path.points[next], position);
 
         if (distance <= budget) {
-            return path.points[next];
-
+            next++;
+            return path.points[next - 1];
         }
 
         Vec2 dir = { path.points[next].x - position.x, path.points[next].z - position.z };
 
-        return position + dir * (budget/distance);
-
+        if (level.CanMove(position, position + dir * (budget / distance), level.agentRadius)) {
+            return position + dir * (budget / distance);
+        }
+        return position;
+        
     }
-    next++;
     return position;
 }
 }
