@@ -23,7 +23,7 @@ const char* Name(State value);
 // Entités de démonstration immobiles ; aucun comportement n'est fourni.
 // Ajoutez ici les données nécessaires à votre propre IA et votre combat.
 struct Enemy {
-    double speed = 10;
+    double speed = 2;
     Vec2 position;
     EnemyKind kind = EnemyKind::Light;
     State state = State::Waiting;
