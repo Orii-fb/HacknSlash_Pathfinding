@@ -21,6 +21,7 @@ void Simulation::Reset() {
             enemy.cooldown = combat::LightAttackCooldown;
             enemy.attackRange = combat::LightAttackRange;
             enemy.recovery = combat::LightRecovery;
+            enemy.rangeDetection = combat::LightRangeDetection;
             break;
         case EnemyKind::Heavy:
             enemy.maxHp = combat::HeavyHp;
@@ -28,6 +29,7 @@ void Simulation::Reset() {
             enemy.cooldown = combat::HeavyAttackCooldown;
             enemy.attackRange = combat::HeavyAttackRange;
             enemy.recovery = combat::HeavyRecovery;
+            enemy.rangeDetection = combat::HeavyRangeDetection;
             break;
         default:
             break;

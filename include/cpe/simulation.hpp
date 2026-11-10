@@ -23,6 +23,7 @@ namespace cpe {struct Player {
         constexpr double LightWindup = 0.45;
         constexpr double LightRecovery = 0.65;
         constexpr double LightHp = 2;
+        constexpr double LightRangeDetection = 4;
     
         constexpr double HeavySpeed = 1.8;
         constexpr double HeavyAttackRange = 1.55;
@@ -31,6 +32,7 @@ namespace cpe {struct Player {
         constexpr double HeavyWindup = 0.9;
         constexpr double HeavyRecovery = 1;
         constexpr double HeavyHp = 4;
+        constexpr double HeavyRangeDetection = 3;
     }
 
 // Ce composant expose les données au debug ; le suivi est à implémenter.
@@ -60,6 +62,7 @@ struct Enemy {
     int maxHp = combat::LightHp;
     double attackRange = combat::LightAttackRange;
     double recovery = combat::LightRecovery;
+    double rangeDetection = combat::LightRangeDetection;
     double stateTime = 0;
     double cooldown = 0;
     bool TargetIsInRange(Vec2 to);
