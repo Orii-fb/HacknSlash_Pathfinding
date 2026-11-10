@@ -59,6 +59,7 @@ Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double d
             return position;
         }
 
+
         Vec2 dir = { path.points[next].x - position.x, path.points[next].z - position.z };
 
         if (level.CanMove(position, position + dir * (budget / distance), level.agentRadius)) {
@@ -69,4 +70,5 @@ Vec2 Navigator::Follow(const Level& level, Vec2 position, double speed, double d
     }
     return position;
 }
+
 }

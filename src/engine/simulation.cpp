@@ -13,6 +13,8 @@ void Simulation::Reset() {
         Enemy enemy;
         enemy.position = spawn.position;
         enemy.kind = spawn.kind;
+
+        //todo : switch case:
         enemies.push_back(enemy);
     }
 }
@@ -42,5 +44,13 @@ void Simulation::Update(Vec2 movement, bool actionPressed, double dt) {
 
     UpdateGameplay(actionPressed, dt);
     for (auto& enemy : enemies) UpdateEnemy(enemy, dt);
+}
+bool Enemy::TargetIsInRange(Vec2 target)
+{
+    //TODO : si la ligne target->position est valide avec SegmentInside(position, target)
+    if (Distance(target, position) > distance) {
+        return true;
+    }
+    return false;
 }
 }

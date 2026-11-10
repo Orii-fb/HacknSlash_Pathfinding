@@ -16,6 +16,7 @@ struct Navigator {
     void Invalidate();
     void Plan(const Level& level, Vec2 position, Vec2 target, Algorithm algorithm);
     Vec2 Follow(const Level& level, Vec2 position, double speed, double dt);
+    
 };
 enum class State { Waiting, Idle, Chase, Windup, Recover, Dead };
 const char* Name(State value);
@@ -28,6 +29,8 @@ struct Enemy {
     EnemyKind kind = EnemyKind::Light;
     State state = State::Waiting;
     Navigator navigator;
+
+    bool TargetIsInRange(Vec2 to);
 };
 class Simulation {
 public:
