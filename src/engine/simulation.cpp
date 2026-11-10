@@ -13,6 +13,23 @@ void Simulation::Reset() {
         Enemy enemy;
         enemy.position = spawn.position;
         enemy.kind = spawn.kind;
+        switch (enemy.kind)
+        {
+        case EnemyKind::Light:
+            enemy.maxHp = combat::LightHp;
+            enemy.speed = combat::LightSpeed;
+            enemy.cooldown = combat::LightAttackCooldown;
+            
+            break;
+        case EnemyKind::Heavy:
+            enemy.maxHp = combat::HeavyHp;
+            enemy.speed = combat::HeavySpeed;
+            enemy.cooldown = combat::HeavyAttackCooldown;
+            
+            break;
+        default:
+            break;
+        }
         enemies.push_back(enemy);
     }
 }
