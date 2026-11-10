@@ -20,14 +20,14 @@ void Simulation::Reset() {
             enemy.speed = combat::LightSpeed;
             enemy.cooldown = combat::LightAttackCooldown;
             enemy.attackRange = combat::LightAttackRange;
-            
+            enemy.recovery = combat::LightRecovery;
             break;
         case EnemyKind::Heavy:
             enemy.maxHp = combat::HeavyHp;
             enemy.speed = combat::HeavySpeed;
             enemy.cooldown = combat::HeavyAttackCooldown;
             enemy.attackRange = combat::HeavyAttackRange;
-
+            enemy.recovery = combat::HeavyRecovery;
             break;
         default:
             break;

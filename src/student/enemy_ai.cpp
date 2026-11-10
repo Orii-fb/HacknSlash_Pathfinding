@@ -14,6 +14,12 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
             }
             break;
         case State::Recover:
+            // TODO faut un cooldown
+            enemy.cooldown += dt;
+            if (enemy.cooldown >= enemy.recovery) {
+                enemy.cooldown = 0;
+                enemy.state = State::Idle;
+            }
             break;
         case State::Chase:
             enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
