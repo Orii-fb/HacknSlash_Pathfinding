@@ -9,18 +9,32 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
     switch (enemy.state) {
         case State::Waiting:
             enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
-            bool Finished = enemy.TargetIsInRange(player.position);
+            if (enemy.navigator.path.search.status == Status::Found) {
+                enemy.state = State::Chase;
+            }
             break;
         case State::Recover:
             break;
         case State::Chase:
+            enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
+            enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+            if (enemy.TargetIsInRange(player.position)) {
+                enemy.state = State::Idle;
+            }
             break;
         case State::Idle:
+            if (!enemy.TargetIsInRange(player.position)) {
+                enemy.state = State::Waiting;
+            }
+            break;
+        default:
+            enemy.navigator.Plan(level, enemy.position, player.position, algorithm);
+            enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
             break;
 
     }
 
     
-    enemy.position = enemy.navigator.Follow(level, enemy.position, enemy.speed, dt);
+    
 }
 }

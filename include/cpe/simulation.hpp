@@ -56,12 +56,13 @@ struct Enemy {
     EnemyKind kind = EnemyKind::Light;
     State state = State::Waiting;
     Navigator navigator;
-
-    bool TargetIsInRange(Vec2 to);
     int hp = combat::LightHp;
     int maxHp = combat::LightHp;
+    double attackRange = combat::LightAttackRange;
     double stateTime = 0;
     double cooldown = 0;
+    bool TargetIsInRange(Vec2 to);
+    
 };
 class Simulation {
 public:

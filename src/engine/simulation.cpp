@@ -19,13 +19,15 @@ void Simulation::Reset() {
             enemy.maxHp = combat::LightHp;
             enemy.speed = combat::LightSpeed;
             enemy.cooldown = combat::LightAttackCooldown;
+            enemy.attackRange = combat::LightAttackRange;
             
             break;
         case EnemyKind::Heavy:
             enemy.maxHp = combat::HeavyHp;
             enemy.speed = combat::HeavySpeed;
             enemy.cooldown = combat::HeavyAttackCooldown;
-            
+            enemy.attackRange = combat::HeavyAttackRange;
+
             break;
         default:
             break;
@@ -59,5 +61,13 @@ void Simulation::Update(Vec2 movement, bool actionPressed, double dt) {
 
     UpdateGameplay(actionPressed, dt);
     for (auto& enemy : enemies) UpdateEnemy(enemy, dt);
+}
+bool Enemy::TargetIsInRange(Vec2 to)
+{
+    if (Distance(position, to) <= attackRange) {
+        return true;
+    }
+
+    return false;
 }
 }
