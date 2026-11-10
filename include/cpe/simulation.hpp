@@ -2,8 +2,36 @@
 #include "level.hpp"
 #include <cstddef>
 
-namespace cpe {
-struct Player { Vec2 position; Vec2 facing{0,-1}; };
+namespace cpe {struct Player {
+    Vec2 position; 
+    Vec2 facing{0,-1};
+    int hp = 10;
+    int maxHp = 10;
+};
+    
+    namespace combat
+    {
+        constexpr double PlayerSpeed = 3.5;
+        constexpr double PlayerAttackRange = 1.35;
+        constexpr double PlayerAttackDamage = 1;
+        constexpr double PlayerAttackCooldown = 0.45;
+    
+        constexpr double LightSpeed = 2.5;
+        constexpr double LightAttackRange = 1.15;
+        constexpr double LightAttackDamage = 1;
+        constexpr double LightAttackCooldown = 1.2;
+        constexpr double LightWindup = 0.45;
+        constexpr double LightRecovery = 0.65;
+        constexpr double LightHp = 2;
+    
+        constexpr double HeavySpeed = 1.8;
+        constexpr double HeavyAttackRange = 1.55;
+        constexpr double HeavyAttackDamage = 2;
+        constexpr double HeavyAttackCooldown = 1.8;
+        constexpr double HeavyWindup = 0.9;
+        constexpr double HeavyRecovery = 1;
+        constexpr double HeavyHp = 4;
+    }
 
 // Ce composant expose les données au debug ; le suivi est à implémenter.
 struct Navigator {
