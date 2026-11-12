@@ -17,19 +17,21 @@ void Simulation::Reset() {
         {
         case EnemyKind::Light:
             enemy.maxHp = combat::LightHp;
+            enemy.attack = combat::LightAttackDamage;
             enemy.speed = combat::LightSpeed;
-            enemy.cooldown = combat::LightAttackCooldown;
             enemy.attackRange = combat::LightAttackRange;
             enemy.recovery = combat::LightRecovery;
             enemy.rangeDetection = combat::LightRangeDetection;
+            enemy.attackCooldown = combat::LightAttackCooldown;
             break;
         case EnemyKind::Heavy:
             enemy.maxHp = combat::HeavyHp;
+            enemy.attack = combat::HeavyAttackDamage;
             enemy.speed = combat::HeavySpeed;
-            enemy.cooldown = combat::HeavyAttackCooldown;
             enemy.attackRange = combat::HeavyAttackRange;
             enemy.recovery = combat::HeavyRecovery;
             enemy.rangeDetection = combat::HeavyRangeDetection;
+            enemy.attackCooldown = combat::HeavyAttackCooldown;
             break;
         default:
             break;
@@ -63,6 +65,13 @@ void Simulation::Update(Vec2 movement, bool actionPressed, double dt) {
 
     UpdateGameplay(actionPressed, dt);
     for (auto& enemy : enemies) UpdateEnemy(enemy, dt);
+}
+bool Enemy::isInRangeDetection(Vec2 pos)
+{
+    if (Distance(position, pos) <= rangeDetection) {
+        return true;
+    }
+    return false;
 }
 bool Enemy::TargetIsInRange(Vec2 to)
 {

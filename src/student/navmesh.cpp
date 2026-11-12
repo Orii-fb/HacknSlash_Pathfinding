@@ -212,6 +212,7 @@ Path NavMesh::FindPath(Vec2 from, Vec2 to, Algorithm algorithm) const {
 
     if (locateFrom == locateTarget) {
         path.points.push_back(to);
+        return path;
     }
 
     //TODO : réparer le segmentInside    
