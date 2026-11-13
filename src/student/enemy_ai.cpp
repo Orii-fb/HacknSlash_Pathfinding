@@ -49,8 +49,8 @@ void Simulation::UpdateEnemy(Enemy& enemy, double dt) {
             }
             else {
                 // TODO : a mettre la fonction d'attaque
-                if (Distance(enemy.position, player.position) - level.agentRadius <= enemy.attackRange && player.hp > 0) {
-                    std::cout << "Player is dead";
+                if (Distance(enemy.position, player.position) - level.agentRadius <= enemy.attackRange && level.Visible(enemy.position, player.position) && player.hp > 0) {
+                    std::cout << "Player was attack";
                     player.hp -= enemy.attack;
                 }
 

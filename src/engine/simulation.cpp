@@ -16,6 +16,7 @@ void Simulation::Reset() {
         switch (enemy.kind)
         {
         case EnemyKind::Light:
+            enemy.hp = combat::LightHp;
             enemy.maxHp = combat::LightHp;
             enemy.attack = combat::LightAttackDamage;
             enemy.speed = combat::LightSpeed;
@@ -25,6 +26,7 @@ void Simulation::Reset() {
             enemy.attackCooldown = combat::LightAttackCooldown;
             break;
         case EnemyKind::Heavy:
+            enemy.hp = combat::HeavyHp;
             enemy.maxHp = combat::HeavyHp;
             enemy.attack = combat::HeavyAttackDamage;
             enemy.speed = combat::HeavySpeed;
